@@ -413,7 +413,7 @@ var cis_number = [
       var html = "";
       html += "<h1>Faces rating: Part 1</h1>";
       html += "<p class='justify'>Now, you will rate the 2 faces.</b>";
-      html += " Again, try to answer <b> as honestly and as spontaneously as possible. </b></br></br>";
+      html += " Please, try to answer <b> as honestly and as spontaneously as possible. </b></br></br>";
       html += "<p></br>Press <span class='light-keys'><kbd>space</kbd></span> to begin</p>";
       return html;
     },
@@ -918,8 +918,8 @@ var cis_number = [
   debrief += "<a href='https://app.prolific.co/submissions/complete?cc=1C606110' target='_blank'>click here</a>";
 
   // TIMELINE ----------------------------------------------------------------------------------------------------------
-  //timeline.push(consent);
-  //timeline.push(Quit_expe);
+  timeline.push(consent);
+  timeline.push(Quit_expe);
   timeline.push(activeFullscreen);
   timeline.push(instr_gene);
   timeline.push(previewCIinst_avg);
