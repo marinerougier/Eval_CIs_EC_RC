@@ -656,6 +656,7 @@ var cis_number = [
         //   $("li:last-of-type").css("width", "110px");
         },
         on_finish: function(data) {
+          data.task = "cis_personality";
           var parsed_response  = JSON.parse(data.responses);
           data.sociable      = parsed_response.Q0;
           data.funloving     = parsed_response.Q1;
@@ -794,6 +795,7 @@ var cis_number = [
         //   $("li:last-of-type").css("width", "110px");
         },
         on_finish: function(data) {
+          data.task = "cis_personality";
           var parsed_response  = JSON.parse(data.responses);
           data.sociable      = parsed_response.Q0;
           data.funloving     = parsed_response.Q1;
@@ -887,6 +889,7 @@ var scaleNice  = ["0</br>I think this person is not nice at all", "1", "2", "3",
         //   $("li:last-of-type").css("width", "110px");
         },
         on_finish: function(data) {
+          data.task = "cis_eval";
           var parsed_response  = JSON.parse(data.responses);
           data.liking   = parsed_response.Q0;
           data.nice     = parsed_response.Q1;
@@ -923,9 +926,10 @@ var scaleNice  = ["0</br>I think this person is not nice at all", "1", "2", "3",
         //   $("li:last-of-type").css("width", "110px");
         },
         on_finish: function(data) {
+          data.task = "cis_eval";
           var parsed_response  = JSON.parse(data.responses);
           data.liking   = parsed_response.Q0;
-          data.nice     = parsed_response.Q2;
+          data.nice     = parsed_response.Q1;
           data.ci       = ciImg.imgHtml;
         },
     };
@@ -1120,14 +1124,23 @@ var scaleNice  = ["0</br>I think this person is not nice at all", "1", "2", "3",
         totalTime: jsPsych.totalTime()
       });
 
-      var subdata = data.filter({trial_type: 'survey-likert'}).csv();
+      var rating_personality = data.filter({task: 'cis_personality'}).csv();
+      var rating_evaluation = data.filter({task: 'cis_eval'}).csv();
+
       //jsPsych.data.displayData();
 
       /* Send data to Firebase and redirect to Qualtrics */
-      database.ref("Eval_Cis_Expe_EC_RC/" + id + "/").update({subdata}).then(function() { 
-        console.log("data sent!");
+      database
+      .ref("Eval_Cis_Expe_EC_RC/" + id + "/")
+      .update({rating_personality})
+      .then(function() { 
+          database
+          .ref("Eval_Cis_Expe_EC_RC/" + id + "/")
+          .update({rating_evaluation})
+          .then(function () {console.log("data sent!");
         $("#jspsych-content").html(debrief);
         //window.location = qlink; // redirect to qualtrics
+          });
       });
     }
   });
