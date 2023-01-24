@@ -280,16 +280,17 @@ var cis_number = [
   preloadimages.push(cis_condition);
   preloadimages.push(cis_subgroup);
 
-  // randomize order
-  cis_condition = _.shuffle(cis_condition); // randomize order
-  cis_subgroup = _.shuffle(cis_subgroup); // randomize order
-
   // CIs stims for condition- and subgroup-level CIs
   CIsStims_condition = cis_condition.map(function(e) {return {imgHtml: "<img class='imgJudge' src='" + e + "'>"}});
   CIsStims_subgroup = cis_subgroup.map(function(e) {return {imgHtml: "<img class='imgJudge' src='" + e + "'>"}});
   CIsStims_condition_preview = cis_condition.map(function(e) {return {imgHtml: "<img class='imgPreview' src='" + e + "'>"}});
   CIsStims_subgroup_preview = cis_subgroup.map(function(e) {return {imgHtml: "<img class='imgPreview' src='" + e + "'>"}});
 
+  // randomize order
+  CIsStims_condition = _.shuffle(CIsStims_condition);
+  CIsStims_subgroup = _.shuffle(CIsStims_subgroup);
+  CIsStims_condition_preview = _.shuffle(CIsStims_condition_preview);
+  CIsStims_subgroup_preview = _.shuffle(CIsStims_subgroup_preview);
 
 /*
   // Preload images
@@ -352,6 +353,7 @@ var cis_number = [
     },
   };
 
+
    var instr_gene = {
     type: "html-keyboard-response",
     post_trial_gap: 300,
@@ -359,10 +361,9 @@ var cis_number = [
     stimulus: function() {
       var html = "";
       html += "<h1>Faces rating</h1>";
-      html += "<p class='justify'>In this study, you task is to <b>evaluate several faces</b> (12 faces in total). More specifically, your task "
-      html += "will be to evaluate each face on a series of <b>54 personality traits and personality outcomes. </b></br> ";
-      html += "As you will see, these faces have been <b>blurred</b> to make the task more challenging. </br></br>";
-      html += "This study consists in two parts. In Part 1, you will evaluate 2 faces and in Part 2 you will evaluate 10 faces. </br></br>";
+      html += "<p class='justify'>In this study, your task is to <b>evaluate several faces</b>.</br></br> ";
+      html += "This study consists in four separate parts. <b>In Parts 1 and 2</b>, your task will be to evaluate the faces on a series of <b>54 personality traits and personality outcomes. </b>First, you will evaluate a set of 2 faces (in Part 1) and then you will evaluate another set of 10 faces (in Part 2). <b>In Parts 3 and 4</b>, you will report <b>2 different judgments</b> (more specific instructions will follow). Again, you will first evaluate the set of 2 faces (in Part 3) and then the other set of 10 faces (in Part 4).</br></br>";
+      html += "Before starting, note that the faces have been <b>blurred</b> to make the task more challenging. </br></br>";
       html += "<p></br>Press <span class='light-keys'><kbd>space</kbd></span> to begin</p>";
       return html;
     },
@@ -441,6 +442,43 @@ var cis_number = [
        }
   };
 
+  var jugmentInst_avg_eval = {
+    type: "html-keyboard-response",
+    post_trial_gap: 300,
+    choices: [32],
+    stimulus: function() {
+      var html = "";
+      html += "<h1>Faces rating: Part 3</h1>";
+      html += "<p class='justify'>Part 2 is over. Now, you will again be presented with the 2 faces you saw in Part 1.</b></br></br>";
+      html += " This time, <b>you will be asked to indicate to what extent you like the person and whether you think the person is nice.</b></br>";
+      html += " Please, try to answer <b> as honestly and as spontaneously as possible. </b></br></br>";
+      html += "<p></br>Press <span class='light-keys'><kbd>space</kbd></span> to begin</p>";
+      return html;
+    },
+        on_load: function() {
+          $(".jspsych-content").css("margin-top", "200px");
+          $(".jspsych-content").css("max-width", "90%");
+       }
+  };
+
+  var jugmentInst_subgroup_eval = {
+    type: "html-keyboard-response",
+    post_trial_gap: 300,
+    choices: [32],
+    stimulus: function() {
+      var html = "";
+      html += "<h1>Faces rating: Part 4</h1>";
+      html += "<p class='justify'>Part 3 is over. Now, you will rate the 10 faces you saw in Part 2.</b></br></br>";
+      html += " As in Part 3, <b>you will indicate to what extent you like the person and whether you think the person is nice. </b></br>";
+      html += " Please, try to answer <b> as honestly and as spontaneously as possible. </b></br></br>";
+      html += "<p></br>Press <span class='light-keys'><kbd>space</kbd></span> to begin</p>";
+      return html;
+    },
+        on_load: function() {
+          $(".jspsych-content").css("margin-top", "200px");
+          $(".jspsych-content").css("max-width", "90%");
+       }
+  };
 
 /* PREVIEW CIS */
   var previewCI_avg = {
@@ -465,7 +503,7 @@ var cis_number = [
     }]
   };
 
-/* JUDGMENT CIS */
+/* JUDGMENT CIS ON PERSONALITY TRAITS */
 
   //social competence:
   var scaleSociable = ["0</br>Not sociable at all", "1", "2", "3", "4", "5</br>Totally sociable"];
@@ -817,6 +855,115 @@ var cis_number = [
     judgments_subgroup.push(likert_trial);
   });
 
+/* JUDGMENT CIS ON LIKING & NICE */
+
+var scaleLiking = ["0</br>I do not like this person at all", "1", "2", "3", "4", "5</br>I like this person very much"];
+var scaleNice  = ["0</br>I think this person is not nice at all", "1", "2", "3", "4", "5</br>I think this person is very nice"];
+
+// Condition-level CIs
+  var judgments_condition_eval = [];
+  CIsStims_condition.map(function(ciImg){
+    var likert_trial = {
+        type: 'survey-likert',
+        preamble: "<img class='imgBack' src='Fond_blanc.jpeg'>" + ciImg.imgHtml,
+        questions: [
+          {prompt: "", labels: scaleLiking, required: true},
+          {prompt: "", labels: scaleNice, required: true}
+        ],
+        randomize_question_order: true, 
+        button_label: 'Continue',
+        on_load: function() {
+          $(".jspsych-content").css("max-width", "100%");
+          $(".jspsych-content").css("margin-top", "430px");
+          $(".jspsych-survey-likert-statement").css("margin", "0px");
+          $(".jspsych-survey-likert-statement").css("padding", "0px");
+          $(".jspsych-survey-likert-opts").css("padding", "0 0 10px");
+          $("#jspsych-survey-likert-next").css("margin-top", "10px");
+          $("#jspsych-survey-likert-form").css("width", "800px");
+          $("li").css("width", "9%");
+          
+
+        //   $("li:first-of-type").css("width", "110px");
+        //   $("li:last-of-type").css("width", "110px");
+        },
+        on_finish: function(data) {
+          var parsed_response  = JSON.parse(data.responses);
+          data.liking   = parsed_response.Q0;
+          data.nice     = parsed_response.Q1;
+          data.ci       = ciImg.imgHtml;
+        },
+    };
+    judgments_condition_eval.push(likert_trial);
+  });
+
+ // Subgroup-level CIs
+  var judgments_subgroup_eval = [];
+  CIsStims_subgroup.map(function(ciImg){
+    var likert_trial = {
+        type: 'survey-likert',
+        preamble: "<img class='imgBack' src='Fond_blanc.jpeg'>" + ciImg.imgHtml,
+        questions: [
+          {prompt: "", labels: scaleLiking, required: true},
+          {prompt: "", labels: scaleNice, required: true}
+        ],
+        randomize_question_order: true, 
+        button_label: 'Continue',
+        on_load: function() {
+          $(".jspsych-content").css("max-width", "100%");
+          $(".jspsych-content").css("margin-top", "430px");
+          $(".jspsych-survey-likert-statement").css("margin", "0px");
+          $(".jspsych-survey-likert-statement").css("padding", "0px");
+          $(".jspsych-survey-likert-opts").css("padding", "0 0 10px");
+          $("#jspsych-survey-likert-next").css("margin-top", "10px");
+          $("#jspsych-survey-likert-form").css("width", "800px");
+          $("li").css("width", "9%");
+          
+
+        //   $("li:first-of-type").css("width", "110px");
+        //   $("li:last-of-type").css("width", "110px");
+        },
+        on_finish: function(data) {
+          var parsed_response  = JSON.parse(data.responses);
+          data.liking   = parsed_response.Q0;
+          data.nice     = parsed_response.Q2;
+          data.ci       = ciImg.imgHtml;
+        },
+    };
+    judgments_subgroup_eval.push(likert_trial);
+  });
+
+// Attention check
+    var likertScale = ["1</br>Totally disagree", "2", "3", "4", "5", "6", "7</br>Totally agree"];
+
+
+    var CheckItem = [
+        'Please answer 4 to this statement.',
+    ];
+
+    var questionsLiking = [];
+    CheckItem.map(function (item) { questionsLiking.push({ prompt: '<i>' + item + '</i>', labels: likertScale, required: true }); });
+
+    var attention_check = {
+        type: 'survey-likert',
+        questions: questionsLiking,
+        post_trial_gap: 300,
+        randomize_question_order: true,
+        on_load: function () {
+            //$(".jspsych-content-wrapper").css("height", "auto");
+            $(".jspsych-content").css("margin-top", "200px");
+            $(".jspsych-content").css("max-width", "90%");
+            $(".jspsych-content-wrapper").scrollTop(0);
+            $('.jspsych-content-wrapper').css({ "height": "1300px" });
+        },
+        on_finish: function (data) {
+            var parsed_response = JSON.parse(data.responses);
+            jsPsych.data.addProperties({
+                AttentionCheck: parsed_response.Q0,
+            });
+        },
+    };
+
+
   /* AGE */
   var age = {
       timeline: [{
@@ -925,11 +1072,16 @@ var cis_number = [
   timeline.push(previewCIinst_avg);
   timeline.push(previewCI_avg);
   timeline.push(jugmentInst_avg);
-  timeline.push(judgments_condition);
+  //timeline.push(judgments_condition);
   timeline.push(previewCIinst_subgroup);
   timeline.push(previewCI_subgroup);
   timeline.push(jugmentInst_subgroup);
-  timeline.push(judgments_subgroup);
+  //timeline.push(judgments_subgroup);
+  timeline.push(jugmentInst_avg_eval);
+  timeline.push(judgments_condition_eval);
+  timeline.push(attention_check);
+  timeline.push(jugmentInst_subgroup_eval);
+  timeline.push(judgments_subgroup_eval);
   timeline.push(age);
   timeline.push(gender);
   timeline.push(language);
